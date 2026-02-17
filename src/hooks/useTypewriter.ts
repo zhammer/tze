@@ -10,7 +10,7 @@ export function useTypewriter() {
 
   // Fetch GIFs on mount
   useEffect(() => {
-    fetchGifs(50).then((gifs) => {
+    fetchGifs().then((gifs) => {
       send({ type: "GIFS_LOADED", gifs });
     });
   }, [send]);

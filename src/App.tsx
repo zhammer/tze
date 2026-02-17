@@ -1,4 +1,5 @@
 import { useTypewriter } from "./hooks/useTypewriter";
+import { Showcase } from "./components/Showcase";
 
 function App() {
   const { snapshot } = useTypewriter();
@@ -7,13 +8,15 @@ function App() {
     return <div className="loading">loading...</div>;
   }
 
+  const { visibleLetters, events } = snapshot.context;
+  const lastKeystroke = [...events].reverse().find((e) => e.type === "keystroke");
+  const showcaseGif = lastKeystroke?.gifUrl ?? null;
+
   return (
     <div className="app">
-      <div className="showcase">
-        {/* Showcase built in Task 6 */}
-      </div>
+      <Showcase gifUrl={showcaseGif} />
       <div className="text-line">
-        {snapshot.context.visibleLetters.map((vl, i) => (
+        {visibleLetters.map((vl, i) => (
           <div key={i} className="letter-cell">
             {vl.gifUrl && (
               <img className="letter-gif" src={vl.gifUrl} alt="" />

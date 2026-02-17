@@ -18,6 +18,12 @@ export function useTypewriter() {
   // Listen for keystrokes
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        send({ type: "SAVE" });
+        return;
+      }
+
       if (snapshot.value === "saved") return;
 
       const timestamp = Date.now();

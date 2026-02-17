@@ -1,8 +1,16 @@
+import { useEffect } from "react";
 import { useTypewriter } from "./hooks/useTypewriter";
 import { Showcase } from "./components/Showcase";
+import { downloadRecording } from "./utils/save";
 
 function App() {
   const { snapshot } = useTypewriter();
+
+  useEffect(() => {
+    if (snapshot.value === "saved") {
+      downloadRecording(snapshot.context.events);
+    }
+  }, [snapshot.value]);
 
   if (snapshot.value === "loading") {
     return <div className="loading">loading...</div>;

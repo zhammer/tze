@@ -3,38 +3,26 @@ import { fetchGifs } from "./fetchGifs";
 
 describe("fetchGifs", () => {
   beforeEach(() => {
-    vi.restoreAllMocks();
+    // Stub Image for Node environment
+    vi.stubGlobal(
+      "Image",
+      class {
+        onload: (() => void) | null = null;
+        onerror: (() => void) | null = null;
+        set src(_: string) {
+          // Simulate immediate load
+          setTimeout(() => this.onload?.(), 0);
+        }
+      }
+    );
   });
 
-  it("returns an array of square gif URLs from giphy trending", async () => {
-    const mockResponse = {
-      data: [
-        {
-          images: {
-            fixed_width_small: { url: "https://giphy.com/gif1.gif" },
-          },
-        },
-        {
-          images: {
-            fixed_width_small: { url: "https://giphy.com/gif2.gif" },
-          },
-        },
-      ],
-    };
-
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      })
-    );
-
-    const gifs = await fetchGifs(2);
-    expect(gifs).toEqual([
-      "https://giphy.com/gif1.gif",
-      "https://giphy.com/gif2.gif",
-    ]);
-    expect(fetch).toHaveBeenCalledOnce();
+  it("returns an array of unique cataas gif URLs", async () => {
+    const gifs = await fetchGifs(5);
+    expect(gifs).toHaveLength(5);
+    gifs.forEach((url) => {
+      expect(url).toContain("cataas.com/cat/gif");
+    });
+    expect(new Set(gifs).size).toBe(5);
   });
 });

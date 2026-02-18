@@ -29,15 +29,19 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100%;
-  padding: 2rem;
-  gap: 3rem;
+  /* push content down so showcase sits at vertical center */
+  padding-top: calc(50vh - 100px);
+  padding-bottom: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  gap: 6rem;
 }
 
 .showcase {
-  width: 300px;
-  height: 300px;
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,27 +57,39 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.2em;
-  max-width: 80%;
+  gap: 2rem 0;
+  max-width: 500px;
+}
+
+.word {
+  display: inline-flex;
+}
+
+.word-space {
+  display: inline-flex;
+  width: 28px;
 }
 
 .letter-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  min-width: 1.5em;
+  gap: 2px;
+  width: 26px;
 }
 
 .letter-gif {
-  width: 32px;
-  height: 32px;
+  width: 16px;
+  height: 16px;
   object-fit: cover;
+  /* nudge to visually center over the letter glyph */
+  transform: translate(-0.5px, 0.5px);
 }
 
 .letter {
-  font-size: 1rem;
+  font-size: 30px;
   font-family: "Courier New", Courier, monospace;
   text-transform: uppercase;
-  letter-spacing: 0.3em;
+  letter-spacing: 0;
+  line-height: 1;
 }

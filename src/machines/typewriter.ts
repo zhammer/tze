@@ -69,7 +69,7 @@ export const typewriterMachine = setup({
             const gifProviderRef = context.gifProviderRef!;
 
             let gifUrl: string | undefined;
-            if (event.letter !== " ") {
+            if (/^[A-Z0-9]$/i.test(event.letter)) {
               gifProviderRef.send({ type: "GET_GIF" });
               gifUrl =
                 gifProviderRef.getSnapshot().context.lastProvided ?? undefined;
@@ -100,7 +100,7 @@ export const typewriterMachine = setup({
             const gifProviderRef = context.gifProviderRef!;
 
             let gifUrl: string | undefined;
-            if (event.letter !== " ") {
+            if (/^[A-Z0-9]$/i.test(event.letter)) {
               gifProviderRef.send({ type: "GET_GIF" });
               gifUrl =
                 gifProviderRef.getSnapshot().context.lastProvided ?? undefined;

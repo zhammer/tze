@@ -1,13 +1,13 @@
-interface ShowcaseProps {
+interface ScreenProps {
   gifUrl: string | null;
 }
 
-export function Showcase({ gifUrl }: ShowcaseProps) {
+export function Screen({ gifUrl }: ScreenProps) {
   return (
-    <div className="showcase">
+    <div className="screen">
       {gifUrl && (
         <img
-          className="showcase-gif"
+          className="screen-gif"
           src={gifUrl}
           alt=""
           key={gifUrl + Date.now()}

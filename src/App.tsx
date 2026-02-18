@@ -1,27 +1,38 @@
 import { useEffect } from "react";
 import { useTypewriter } from "./hooks/useTypewriter";
-import { Showcase } from "./components/Showcase";
+import { Screen } from "./components/Screen";
 import { downloadRecording } from "./utils/save";
 import type { VisibleLetter } from "./machines/typewriter";
 
-function groupIntoWords(letters: VisibleLetter[]): VisibleLetter[][] {
-  const words: VisibleLetter[][] = [];
+type WordGroup =
+  | { type: "word"; letters: VisibleLetter[] }
+  | { type: "space" }
+  | { type: "newline" };
+
+function groupIntoWords(letters: VisibleLetter[]): WordGroup[] {
+  const groups: WordGroup[] = [];
   let current: VisibleLetter[] = [];
   for (const vl of letters) {
-    if (vl.letter === " ") {
+    if (vl.letter === "\n") {
       if (current.length > 0) {
-        words.push(current);
+        groups.push({ type: "word", letters: current });
         current = [];
       }
-      words.push([vl]);
+      groups.push({ type: "newline" });
+    } else if (vl.letter === " ") {
+      if (current.length > 0) {
+        groups.push({ type: "word", letters: current });
+        current = [];
+      }
+      groups.push({ type: "space" });
     } else {
       current.push(vl);
     }
   }
   if (current.length > 0) {
-    words.push(current);
+    groups.push({ type: "word", letters: current });
   }
-  return words;
+  return groups;
 }
 
 function App() {
@@ -38,26 +49,36 @@ function App() {
   }
 
   const { visibleLetters, events } = snapshot.context;
-  const lastKeystroke = [...events].reverse().find((e) => e.type === "keystroke");
-  const showcaseGif = lastKeystroke?.gifUrl ?? null;
-  const words = groupIntoWords(visibleLetters);
+  const lastGifKeystroke = [...events].reverse().find((e) => e.type === "keystroke" && e.gifUrl);
+  const screenGif = lastGifKeystroke?.gifUrl ?? null;
+  const groups = groupIntoWords(visibleLetters);
 
   return (
     <div className="app">
-      <Showcase gifUrl={showcaseGif} />
+      <Screen gifUrl={screenGif} />
       <div className="text-line">
-        {words.map((word, wi) => (
-          <span key={wi} className={word.length === 1 && word[0].letter === " " ? "word-space" : "word"}>
-            {word.map((vl, li) => (
-              <div key={li} className="letter-cell">
-                {vl.gifUrl && (
-                  <img className="letter-gif" src={vl.gifUrl} alt="" />
-                )}
-                <span className="letter">{vl.letter === " " ? "\u00A0" : vl.letter}</span>
-              </div>
-            ))}
-          </span>
-        ))}
+        {groups.map((group, gi) => {
+          if (group.type === "newline") {
+            return <div key={gi} className="line-break" />;
+          }
+          if (group.type === "space") {
+            return <span key={gi} className="word-space" />;
+          }
+          return (
+            <span key={gi} className="word">
+              {group.letters.map((vl, li) => (
+                <div key={li} className="letter-cell">
+                  <div className="letter-gif-slot">
+                    {vl.gifUrl && (
+                      <img className="letter-gif" src={vl.gifUrl} alt="" />
+                    )}
+                  </div>
+                  <span className="letter">{vl.letter}</span>
+                </div>
+              ))}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

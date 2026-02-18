@@ -24,6 +24,7 @@ export function useTypewriter() {
         return;
       }
 
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (snapshot.value === "saved") return;
 
       const timestamp = Date.now();
@@ -31,6 +32,9 @@ export function useTypewriter() {
       if (e.key === "Backspace") {
         e.preventDefault();
         send({ type: "BACKSPACE", timestamp });
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        send({ type: "KEYSTROKE", letter: "\n", timestamp });
       } else if (VALID_KEY_REGEX.test(e.key)) {
         e.preventDefault();
         send({ type: "KEYSTROKE", letter: e.key.toUpperCase(), timestamp });

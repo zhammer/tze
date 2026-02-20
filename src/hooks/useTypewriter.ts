@@ -25,7 +25,7 @@ export function useTypewriter() {
       }
 
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (snapshot.value === "saved") return;
+      if (snapshot.value === "saved" || snapshot.value === "done") return;
 
       const timestamp = Date.now();
 

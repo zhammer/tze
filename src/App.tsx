@@ -51,11 +51,12 @@ function App() {
   const { visibleLetters, events } = snapshot.context;
   const lastGifKeystroke = [...events].reverse().find((e) => e.type === "keystroke" && e.gifUrl);
   const screenGif = lastGifKeystroke?.gifUrl ?? null;
+  const gifCount = events.filter((e) => e.type === "keystroke" && e.gifUrl).length;
   const groups = groupIntoWords(visibleLetters);
 
   return (
     <div className="app">
-      <Screen gifUrl={screenGif} />
+      <Screen key={gifCount} gifUrl={screenGif} />
       <div className="text-line">
         {groups.map((group, gi) => {
           if (group.type === "newline") {

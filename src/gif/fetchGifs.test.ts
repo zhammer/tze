@@ -15,11 +15,11 @@ describe("fetchGifs", () => {
     );
   });
 
-  it("returns an array of ocean/scenic giphy gif URLs", async () => {
+  it("returns an array of local gif paths", async () => {
     const gifs = await fetchGifs();
-    expect(gifs.length).toBeGreaterThanOrEqual(20);
+    expect(gifs.length).toBeGreaterThanOrEqual(1);
     gifs.forEach((url) => {
-      expect(url).toContain("media.giphy.com/media/");
+      expect(url).toMatch(/\/gifs\/.*\.gif$/);
     });
     expect(new Set(gifs).size).toBe(gifs.length);
   });

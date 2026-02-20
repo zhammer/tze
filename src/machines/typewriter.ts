@@ -94,7 +94,20 @@ export const typewriterMachine = setup({
     },
     typing: {
       on: {
-        KEYSTROKE: {
+        KEYSTROKE: [
+          {
+            guard: ({ context, event }) => {
+              const vl = context.visibleLetters;
+              return event.letter === "\n" && vl.length > 0 && vl[vl.length - 1].letter === "\n";
+            },
+            target: "done",
+            actions: assign(({ context }) => {
+              // Remove the trailing newline before finishing
+              const visibleLetters = context.visibleLetters.slice(0, -1);
+              return { visibleLetters };
+            }),
+          },
+          {
           actions: assign(({ context, event }) => {
             const t = event.timestamp - context.startTime!;
             const gifProviderRef = context.gifProviderRef!;
@@ -119,7 +132,7 @@ export const typewriterMachine = setup({
               visibleLetters: deriveVisibleLetters(events),
             };
           }),
-        },
+        }],
         BACKSPACE: {
           actions: assign(({ context, event }) => {
             const t = event.timestamp - context.startTime!;
@@ -139,6 +152,9 @@ export const typewriterMachine = setup({
           target: "saved",
         },
       },
+    },
+    done: {
+      type: "final",
     },
     saved: {
       type: "final",

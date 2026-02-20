@@ -6,12 +6,7 @@ export function Screen({ gifUrl }: ScreenProps) {
   return (
     <div className="screen">
       {gifUrl && (
-        <img
-          className="screen-gif"
-          src={gifUrl}
-          alt=""
-          key={gifUrl + Date.now()}
-        />
+        <img className="screen-gif" src={gifUrl} alt="" />
       )}
     </div>
   );

@@ -56,7 +56,7 @@ function App() {
 
   return (
     <div className="app">
-      <Screen key={gifCount} gifUrl={screenGif} />
+      <Screen gifUrl={screenGif} gifCount={gifCount} />
       <div className="text-line">
         {groups.map((group, gi) => {
           if (group.type === "newline") {

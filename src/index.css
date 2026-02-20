@@ -46,9 +46,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100%;
-  /* push content down so showcase sits at vertical center */
-  padding-top: calc(50vh - 100px);
+  min-height: var(--vvh, 100%);
+  /* push content down so showcase sits at vertical center;
+     --vvh shrinks when the mobile keyboard opens */
+  padding-top: calc(var(--vvh, 100vh) / 2 - 100px);
   padding-bottom: 2rem;
   padding-left: 2rem;
   padding-right: 2rem;

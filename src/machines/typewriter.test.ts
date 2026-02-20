@@ -10,14 +10,14 @@ describe("typewriterMachine", () => {
     actor.start();
     expect(actor.getSnapshot().value).toBe("loading");
 
-    actor.send({ type: "GIFS_LOADED", gifs: testGifs });
+    actor.send({ type: "GIFS_LOADED", gifs: testGifs, palette: "test" });
     expect(actor.getSnapshot().value).toBe("ready");
   });
 
   it("transitions to typing on first keystroke and records the event", () => {
     const actor = createActor(typewriterMachine);
     actor.start();
-    actor.send({ type: "GIFS_LOADED", gifs: testGifs });
+    actor.send({ type: "GIFS_LOADED", gifs: testGifs, palette: "test" });
 
     actor.send({ type: "KEYSTROKE", letter: "H", timestamp: 1000 });
     const snap = actor.getSnapshot();
@@ -35,7 +35,7 @@ describe("typewriterMachine", () => {
   it("records backspace events", () => {
     const actor = createActor(typewriterMachine);
     actor.start();
-    actor.send({ type: "GIFS_LOADED", gifs: testGifs });
+    actor.send({ type: "GIFS_LOADED", gifs: testGifs, palette: "test" });
     actor.send({ type: "KEYSTROKE", letter: "H", timestamp: 1000 });
     actor.send({ type: "BACKSPACE", timestamp: 1500 });
 
@@ -50,7 +50,7 @@ describe("typewriterMachine", () => {
   it("derives visible letters from events", () => {
     const actor = createActor(typewriterMachine);
     actor.start();
-    actor.send({ type: "GIFS_LOADED", gifs: testGifs });
+    actor.send({ type: "GIFS_LOADED", gifs: testGifs, palette: "test" });
     actor.send({ type: "KEYSTROKE", letter: "H", timestamp: 1000 });
     actor.send({ type: "KEYSTROKE", letter: "I", timestamp: 1200 });
     actor.send({ type: "BACKSPACE", timestamp: 1400 });
@@ -64,7 +64,7 @@ describe("typewriterMachine", () => {
   it("spaces get no gif", () => {
     const actor = createActor(typewriterMachine);
     actor.start();
-    actor.send({ type: "GIFS_LOADED", gifs: testGifs });
+    actor.send({ type: "GIFS_LOADED", gifs: testGifs, palette: "test" });
     actor.send({ type: "KEYSTROKE", letter: " ", timestamp: 1000 });
 
     const snap = actor.getSnapshot();

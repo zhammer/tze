@@ -10,6 +10,8 @@ export type VisibleLetter = {
   gifUrl?: string;
 };
 
+type GifProviderRef = ActorRefFrom<typeof gifProviderMachine>;
+
 function deriveVisibleLetters(events: TypewriterEvent[]): VisibleLetter[] {
   const result: VisibleLetter[] = [];
   for (const event of events) {
@@ -28,10 +30,11 @@ export const typewriterMachine = setup({
       events: TypewriterEvent[];
       visibleLetters: VisibleLetter[];
       startTime: number | null;
-      gifProviderRef: ActorRefFrom<typeof gifProviderMachine> | null;
+      gifProviderRef: GifProviderRef | null;
+      gifProviders: Record<string, GifProviderRef>;
     },
     events: {} as
-      | { type: "GIFS_LOADED"; gifs: string[] }
+      | { type: "GIFS_LOADED"; gifs: string[]; palette: string }
       | { type: "KEYSTROKE"; letter: string; timestamp: number }
       | { type: "BACKSPACE"; timestamp: number }
   },
@@ -46,18 +49,22 @@ export const typewriterMachine = setup({
     visibleLetters: [],
     startTime: null,
     gifProviderRef: null,
+    gifProviders: {},
   },
   states: {
     loading: {
       on: {
         GIFS_LOADED: {
           target: "ready",
-          actions: assign({
-            gifProviderRef: ({ event, spawn }) =>
-              spawn("gifProvider", {
-                input: { gifs: event.gifs },
-                id: "gifProvider",
-              }),
+          actions: assign(({ context, event, spawn }) => {
+            const ref = spawn("gifProvider", {
+              input: { gifs: event.gifs },
+              id: `gifProvider-${event.palette}`,
+            });
+            return {
+              gifProviderRef: ref,
+              gifProviders: { ...context.gifProviders, [event.palette]: ref },
+            };
           }),
         },
       },
@@ -65,12 +72,19 @@ export const typewriterMachine = setup({
     ready: {
       on: {
         GIFS_LOADED: {
-          actions: assign({
-            gifProviderRef: ({ event, spawn }) =>
-              spawn("gifProvider", {
-                input: { gifs: event.gifs },
-                id: "gifProvider",
-              }),
+          actions: assign(({ context, event, spawn }) => {
+            const existing = context.gifProviders[event.palette];
+            if (existing) {
+              return { gifProviderRef: existing };
+            }
+            const ref = spawn("gifProvider", {
+              input: { gifs: event.gifs },
+              id: `gifProvider-${event.palette}`,
+            });
+            return {
+              gifProviderRef: ref,
+              gifProviders: { ...context.gifProviders, [event.palette]: ref },
+            };
           }),
         },
         KEYSTROKE: {
@@ -106,12 +120,19 @@ export const typewriterMachine = setup({
     typing: {
       on: {
         GIFS_LOADED: {
-          actions: assign({
-            gifProviderRef: ({ event, spawn }) =>
-              spawn("gifProvider", {
-                input: { gifs: event.gifs },
-                id: "gifProvider",
-              }),
+          actions: assign(({ context, event, spawn }) => {
+            const existing = context.gifProviders[event.palette];
+            if (existing) {
+              return { gifProviderRef: existing };
+            }
+            const ref = spawn("gifProvider", {
+              input: { gifs: event.gifs },
+              id: `gifProvider-${event.palette}`,
+            });
+            return {
+              gifProviderRef: ref,
+              gifProviders: { ...context.gifProviders, [event.palette]: ref },
+            };
           }),
         },
         KEYSTROKE: [

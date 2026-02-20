@@ -47,16 +47,16 @@ function App() {
     const firstPalette = paletteSnapshot.context.palettes[0];
     if (firstPalette && twSnapshot.value === "loading") {
       fetchGifs(firstPalette).then((gifs) => {
-        twSend({ type: "GIFS_LOADED", gifs });
+        twSend({ type: "GIFS_LOADED", gifs, palette: firstPalette });
       });
     }
   }, []);
 
   // When palette machine finishes loading a new palette, feed GIFs to typewriter
   useEffect(() => {
-    const { currentGifs } = paletteSnapshot.context;
+    const { currentGifs, palettes, currentIndex } = paletteSnapshot.context;
     if (currentGifs.length > 0 && paletteSnapshot.value === "showing") {
-      twSend({ type: "GIFS_LOADED", gifs: currentGifs });
+      twSend({ type: "GIFS_LOADED", gifs: currentGifs, palette: palettes[currentIndex] });
     }
   }, [paletteSnapshot.value, paletteSnapshot.context.currentGifs]);
 

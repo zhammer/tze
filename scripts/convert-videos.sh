@@ -3,22 +3,40 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-INPUT_DIR="$ROOT_DIR/videos"
-OUTPUT_DIR="$ROOT_DIR/public/gifs"
+VIDEOS_DIR="$ROOT_DIR/videos"
+GIFS_DIR="$ROOT_DIR/public/gifs"
+
+# If a palette name is given, convert that subdirectory; otherwise convert top-level videos
+PALETTE="${1:-}"
+
+if [ -n "$PALETTE" ]; then
+  INPUT_DIR="$VIDEOS_DIR/$PALETTE"
+  OUTPUT_DIR="$GIFS_DIR/$PALETTE"
+else
+  INPUT_DIR="$VIDEOS_DIR"
+  OUTPUT_DIR="$GIFS_DIR/tze"
+fi
+
+if [ ! -d "$INPUT_DIR" ]; then
+  echo "error: directory not found: $INPUT_DIR"
+  exit 1
+fi
 
 mkdir -p "$OUTPUT_DIR"
 
 for video in "$INPUT_DIR"/*.{mov,mp4,MOV,MP4}; do
   [ -f "$video" ] || continue
   name="$(basename "${video%.*}")"
-  output="$OUTPUT_DIR/$name.gif"
+  # Sanitize filename (remove spaces, parens)
+  safe_name="$(echo "$name" | tr ' ()' '_')"
+  output="$OUTPUT_DIR/$safe_name.gif"
 
   if [ -f "$output" ]; then
-    echo "skip: $name.gif (already exists)"
+    echo "skip: $safe_name.gif (already exists)"
     continue
   fi
 
-  echo "converting: $(basename "$video") -> $name.gif"
+  echo "converting: $(basename "$video") -> $safe_name.gif"
 
   # Generate a palette for better color quality
   palette=$(mktemp /tmp/palette-XXXXXXXX.png)
@@ -31,9 +49,9 @@ for video in "$INPUT_DIR"/*.{mov,mp4,MOV,MP4}; do
     "$output" 2>/dev/null
 
   rm -f "$palette"
-  echo "  done: $name.gif"
+  echo "  done: $safe_name.gif"
 done
 
 echo ""
-echo "generated GIFs:"
+echo "generated GIFs in $OUTPUT_DIR:"
 ls -lh "$OUTPUT_DIR"/*.gif 2>/dev/null || echo "  (none)"

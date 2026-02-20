@@ -11,7 +11,7 @@ export function useTypewriter() {
 
   // Fetch GIFs on mount
   useEffect(() => {
-    fetchGifs().then((gifs) => {
+    fetchGifs("bladetooth").then((gifs) => {
       send({ type: "GIFS_LOADED", gifs });
     });
   }, [send]);

@@ -5,6 +5,7 @@ import { Screen } from "./components/Screen";
 import { PaletteRing } from "./components/PaletteRing";
 import { paletteMachine } from "./machines/palette";
 import { fetchGifs } from "./gif/fetchGifs";
+import { HiddenInput } from "./components/HiddenInput";
 import type { VisibleLetter } from "./machines/typewriter";
 
 type WordGroup =
@@ -39,8 +40,26 @@ function groupIntoWords(letters: VisibleLetter[]): WordGroup[] {
 }
 
 function App() {
-  const { snapshot: twSnapshot, send: twSend } = useTypewriter();
+  const { snapshot: twSnapshot, send: twSend, inputRef, focusInput } = useTypewriter();
   const [paletteSnapshot, paletteSend] = useMachine(paletteMachine);
+
+  // Track the visual viewport height so the layout adjusts when the
+  // mobile keyboard opens (iOS Safari doesn't resize the layout viewport).
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    function updateVvh() {
+      document.documentElement.style.setProperty(
+        "--vvh",
+        `${vv!.height}px`
+      );
+    }
+
+    updateVvh();
+    vv.addEventListener("resize", updateVvh);
+    return () => vv.removeEventListener("resize", updateVvh);
+  }, []);
 
   // Load the first palette on mount
   useEffect(() => {
@@ -63,8 +82,9 @@ function App() {
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       paletteSend({ type: "CLICK", x: e.clientX, y: e.clientY });
+      focusInput();
     },
-    [paletteSend]
+    [paletteSend, focusInput]
   );
 
   if (twSnapshot.value === "loading") {
@@ -80,6 +100,7 @@ function App() {
 
   return (
     <div className="app" onClick={handleClick}>
+      <HiddenInput ref={inputRef} />
       <Screen gifUrl={screenGif} gifCount={gifCount} />
       <div className="text-line">
         {groups.map((group, gi) => {

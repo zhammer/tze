@@ -34,7 +34,6 @@ export const typewriterMachine = setup({
       | { type: "GIFS_LOADED"; gifs: string[] }
       | { type: "KEYSTROKE"; letter: string; timestamp: number }
       | { type: "BACKSPACE"; timestamp: number }
-      | { type: "SAVE" },
   },
 }).createMachine({
   id: "typewriter",
@@ -148,15 +147,9 @@ export const typewriterMachine = setup({
             };
           }),
         },
-        SAVE: {
-          target: "saved",
-        },
       },
     },
     done: {
-      type: "final",
-    },
-    saved: {
       type: "final",
     },
   },

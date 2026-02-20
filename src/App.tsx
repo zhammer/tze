@@ -1,7 +1,5 @@
-import { useEffect } from "react";
 import { useTypewriter } from "./hooks/useTypewriter";
 import { Screen } from "./components/Screen";
-import { downloadRecording } from "./utils/save";
 import type { VisibleLetter } from "./machines/typewriter";
 
 type WordGroup =
@@ -38,20 +36,14 @@ function groupIntoWords(letters: VisibleLetter[]): WordGroup[] {
 function App() {
   const { snapshot } = useTypewriter();
 
-  useEffect(() => {
-    if (snapshot.value === "saved") {
-      downloadRecording(snapshot.context.events);
-    }
-  }, [snapshot.value]);
-
   if (snapshot.value === "loading") {
     return <div className="loading">loading...</div>;
   }
 
-  const { visibleLetters, events } = snapshot.context;
-  const lastGifKeystroke = [...events].reverse().find((e) => e.type === "keystroke" && e.gifUrl);
-  const screenGif = lastGifKeystroke?.gifUrl ?? null;
-  const gifCount = events.filter((e) => e.type === "keystroke" && e.gifUrl).length;
+  const { visibleLetters } = snapshot.context;
+  const lastGifLetter = [...visibleLetters].reverse().find((vl) => vl.gifUrl);
+  const screenGif = lastGifLetter?.gifUrl ?? null;
+  const gifCount = visibleLetters.filter((vl) => vl.gifUrl).length;
   const groups = groupIntoWords(visibleLetters);
 
   return (

@@ -60,16 +60,6 @@ describe("typewriterMachine", () => {
     expect(visible[0].letter).toBe("H");
   });
 
-  it("transitions to saved on SAVE event", () => {
-    const actor = createActor(typewriterMachine);
-    actor.start();
-    actor.send({ type: "GIFS_LOADED", gifs: testGifs });
-    actor.send({ type: "KEYSTROKE", letter: "A", timestamp: 1000 });
-    actor.send({ type: "SAVE" });
-
-    expect(actor.getSnapshot().value).toBe("saved");
-  });
-
   it("spaces get no gif", () => {
     const actor = createActor(typewriterMachine);
     actor.start();

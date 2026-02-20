@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useMachine } from "@xstate/react";
 import { typewriterMachine } from "../machines/typewriter";
 import { fetchGifs } from "../gif/fetchGifs";
+import { downloadRecording } from "../utils/save";
 
 const VALID_KEY_REGEX = /^[a-zA-Z0-9 !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]$/;
 
@@ -20,7 +21,7 @@ export function useTypewriter() {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
-        send({ type: "SAVE" });
+        downloadRecording(snapshot.context.events);
         return;
       }
 

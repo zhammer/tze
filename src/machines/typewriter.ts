@@ -61,6 +61,15 @@ export const typewriterMachine = setup({
     },
     ready: {
       on: {
+        GIFS_LOADED: {
+          actions: assign({
+            gifProviderRef: ({ event, spawn }) =>
+              spawn(gifProviderMachine, {
+                input: { gifs: event.gifs },
+                id: "gifProvider",
+              }),
+          }),
+        },
         KEYSTROKE: {
           target: "typing",
           actions: assign(({ context, event }) => {
@@ -93,6 +102,15 @@ export const typewriterMachine = setup({
     },
     typing: {
       on: {
+        GIFS_LOADED: {
+          actions: assign({
+            gifProviderRef: ({ event, spawn }) =>
+              spawn(gifProviderMachine, {
+                input: { gifs: event.gifs },
+                id: "gifProvider",
+              }),
+          }),
+        },
         KEYSTROKE: [
           {
             guard: ({ context, event }) => {

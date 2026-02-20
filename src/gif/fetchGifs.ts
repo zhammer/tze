@@ -1,7 +1,17 @@
+const allGifModules = import.meta.glob("/public/gifs/**/*.gif");
+
+export function getAvailablePalettes(): string[] {
+  const palettes = new Set<string>();
+  for (const path of Object.keys(allGifModules)) {
+    const match = path.match(/^\/public\/gifs\/([^/]+)\//);
+    if (match) palettes.add(match[1]);
+  }
+  return [...palettes];
+}
+
 // Local GIFs organized into palettes (subdirectories of public/gifs/)
 export async function fetchGifs(palette: string = "tze"): Promise<string[]> {
-  const modules = import.meta.glob("/public/gifs/**/*.gif");
-  const paths = Object.keys(modules)
+  const paths = Object.keys(allGifModules)
     .filter((path) => path.startsWith(`/public/gifs/${palette}/`))
     .map((path) => path.replace(/^\/public/, ""));
 

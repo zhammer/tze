@@ -1,5 +1,10 @@
+import { useEffect, useCallback } from "react";
+import { useMachine } from "@xstate/react";
 import { useTypewriter } from "./hooks/useTypewriter";
 import { Screen } from "./components/Screen";
+import { PaletteRing } from "./components/PaletteRing";
+import { paletteMachine } from "./machines/palette";
+import { fetchGifs } from "./gif/fetchGifs";
 import type { VisibleLetter } from "./machines/typewriter";
 
 type WordGroup =
@@ -34,20 +39,47 @@ function groupIntoWords(letters: VisibleLetter[]): WordGroup[] {
 }
 
 function App() {
-  const { snapshot } = useTypewriter();
+  const { snapshot: twSnapshot, send: twSend } = useTypewriter();
+  const [paletteSnapshot, paletteSend] = useMachine(paletteMachine);
 
-  if (snapshot.value === "loading") {
+  // Load the first palette on mount
+  useEffect(() => {
+    const firstPalette = paletteSnapshot.context.palettes[0];
+    if (firstPalette && twSnapshot.value === "loading") {
+      fetchGifs(firstPalette).then((gifs) => {
+        twSend({ type: "GIFS_LOADED", gifs });
+      });
+    }
+  }, []);
+
+  // When palette machine finishes loading a new palette, feed GIFs to typewriter
+  useEffect(() => {
+    const { currentGifs } = paletteSnapshot.context;
+    if (currentGifs.length > 0 && paletteSnapshot.value === "showing") {
+      twSend({ type: "GIFS_LOADED", gifs: currentGifs });
+    }
+  }, [paletteSnapshot.value, paletteSnapshot.context.currentGifs]);
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      paletteSend({ type: "CLICK", x: e.clientX, y: e.clientY });
+    },
+    [paletteSend]
+  );
+
+  if (twSnapshot.value === "loading") {
     return <div className="loading">loading...</div>;
   }
 
-  const { visibleLetters } = snapshot.context;
+  const { visibleLetters } = twSnapshot.context;
   const lastGifLetter = [...visibleLetters].reverse().find((vl) => vl.gifUrl);
   const screenGif = lastGifLetter?.gifUrl ?? null;
   const gifCount = visibleLetters.filter((vl) => vl.gifUrl).length;
   const groups = groupIntoWords(visibleLetters);
+  const ring = paletteSnapshot.context.ring;
 
   return (
-    <div className="app">
+    <div className="app" onClick={handleClick}>
       <Screen gifUrl={screenGif} gifCount={gifCount} />
       <div className="text-line">
         {groups.map((group, gi) => {
@@ -73,6 +105,9 @@ function App() {
           );
         })}
       </div>
+      {ring && ring.gifs.length > 0 && (
+        <PaletteRing ring={ring} />
+      )}
     </div>
   );
 }

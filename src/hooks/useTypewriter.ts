@@ -1,20 +1,12 @@
 import { useEffect } from "react";
 import { useMachine } from "@xstate/react";
 import { typewriterMachine } from "../machines/typewriter";
-import { fetchGifs } from "../gif/fetchGifs";
 import { downloadRecording } from "../utils/save";
 
 const VALID_KEY_REGEX = /^[a-zA-Z0-9 !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]$/;
 
 export function useTypewriter() {
   const [snapshot, send] = useMachine(typewriterMachine);
-
-  // Fetch GIFs on mount
-  useEffect(() => {
-    fetchGifs("bladetooth").then((gifs) => {
-      send({ type: "GIFS_LOADED", gifs });
-    });
-  }, [send]);
 
   // Listen for keystrokes
   useEffect(() => {
@@ -26,7 +18,7 @@ export function useTypewriter() {
       }
 
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (snapshot.value === "saved" || snapshot.value === "done") return;
+      if (snapshot.value === "done") return;
 
       const timestamp = Date.now();
 

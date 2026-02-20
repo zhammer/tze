@@ -5,6 +5,7 @@ import { Screen } from "./components/Screen";
 import { PaletteRing } from "./components/PaletteRing";
 import { paletteMachine } from "./machines/palette";
 import { fetchGifs } from "./gif/fetchGifs";
+import { HiddenInput } from "./components/HiddenInput";
 import type { VisibleLetter } from "./machines/typewriter";
 
 type WordGroup =
@@ -39,7 +40,7 @@ function groupIntoWords(letters: VisibleLetter[]): WordGroup[] {
 }
 
 function App() {
-  const { snapshot: twSnapshot, send: twSend } = useTypewriter();
+  const { snapshot: twSnapshot, send: twSend, inputRef, focusInput } = useTypewriter();
   const [paletteSnapshot, paletteSend] = useMachine(paletteMachine);
 
   // Load the first palette on mount
@@ -63,8 +64,9 @@ function App() {
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       paletteSend({ type: "CLICK", x: e.clientX, y: e.clientY });
+      focusInput();
     },
-    [paletteSend]
+    [paletteSend, focusInput]
   );
 
   if (twSnapshot.value === "loading") {
@@ -80,6 +82,7 @@ function App() {
 
   return (
     <div className="app" onClick={handleClick}>
+      <HiddenInput ref={inputRef} />
       <Screen gifUrl={screenGif} gifCount={gifCount} />
       <div className="text-line">
         {groups.map((group, gi) => {

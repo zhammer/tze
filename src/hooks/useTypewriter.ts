@@ -55,6 +55,9 @@ export function useTypewriter() {
   }, [send]);
 
   // Mobile keyboard: capture input via beforeinput/input on the hidden element.
+  // We derive isReady so the effect re-runs when loading finishes and the
+  // HiddenInput element actually mounts into the DOM.
+  const isReady = snapshot.value !== "loading";
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
@@ -138,7 +141,7 @@ export function useTypewriter() {
       el.removeEventListener("input", handleInput);
       el.removeEventListener("keydown", handleKeyDown);
     };
-  }, [send]);
+  }, [send, isReady]);
 
   // Re-focus the hidden input whenever the user taps the page.
   const focusInput = useCallback(() => {

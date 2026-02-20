@@ -1,4 +1,9 @@
-const allGifModules = import.meta.glob("/public/gifs/**/*.gif");
+// Eager glob with ?url gives us resolved asset URLs (hashed in production)
+const allGifModules = import.meta.glob("/public/gifs/**/*.gif", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
 
 export function getAvailablePalettes(): string[] {
   const palettes = new Set<string>();
@@ -11,17 +16,17 @@ export function getAvailablePalettes(): string[] {
 
 // Local GIFs organized into palettes (subdirectories of public/gifs/)
 export async function fetchGifs(palette: string = "tze"): Promise<string[]> {
-  const paths = Object.keys(allGifModules)
-    .filter((path) => path.startsWith(`/public/gifs/${palette}/`))
-    .map((path) => path.replace(/^\/public/, ""));
+  const urls = Object.entries(allGifModules)
+    .filter(([path]) => path.startsWith(`/public/gifs/${palette}/`))
+    .map(([, url]) => url);
 
-  if (paths.length === 0) {
+  if (urls.length === 0) {
     throw new Error(`No GIFs found in public/gifs/${palette}/`);
   }
 
   // Preload all GIFs into browser cache
   await Promise.all(
-    paths.map(
+    urls.map(
       (url) =>
         new Promise<void>((resolve) => {
           const img = new Image();
@@ -32,5 +37,5 @@ export async function fetchGifs(palette: string = "tze"): Promise<string[]> {
     )
   );
 
-  return paths;
+  return urls;
 }

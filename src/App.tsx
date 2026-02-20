@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useMachine } from "@xstate/react";
 import { useTypewriter } from "./hooks/useTypewriter";
 import { Screen } from "./components/Screen";
@@ -45,6 +45,9 @@ function App() {
 
   // Track the visual viewport height so the layout adjusts when the
   // mobile keyboard opens (iOS Safari doesn't resize the layout viewport).
+  // Also track whether the keyboard is open so we can suppress the palette
+  // action on the first tap (which should just open the keyboard).
+  const keyboardOpenRef = useRef(false);
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
@@ -54,6 +57,9 @@ function App() {
         "--vvh",
         `${vv!.height}px`
       );
+      // On mobile, the visual viewport shrinks when the keyboard opens.
+      // A >100px difference from window.innerHeight means keyboard is up.
+      keyboardOpenRef.current = vv!.height < window.innerHeight - 100;
     }
 
     updateVvh();
@@ -81,7 +87,13 @@ function App() {
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      paletteSend({ type: "CLICK", x: e.clientX, y: e.clientY });
+      // On touch devices, only trigger palette if the keyboard is already
+      // open. The first tap after the keyboard is closed just opens it.
+      // On desktop (no virtual keyboard) always trigger palette.
+      const isTouchDevice = "ontouchstart" in window;
+      if (!isTouchDevice || keyboardOpenRef.current) {
+        paletteSend({ type: "CLICK", x: e.clientX, y: e.clientY });
+      }
       focusInput();
     },
     [paletteSend, focusInput]

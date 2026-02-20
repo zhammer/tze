@@ -115,7 +115,6 @@ body {
 
 .palette-ring-orbit {
   position: relative;
-  animation: orbit-spin 20s linear infinite;
 }
 
 .palette-ring-thumb {
@@ -128,13 +127,10 @@ body {
   height: var(--thumb-size);
   margin-left: calc(var(--thumb-size) / -2);
   margin-top: calc(var(--thumb-size) / -2);
-  /* rotate to position on circle, translate out, stay rotated (perpendicular to circumference) */
   transform:
     rotate(var(--angle))
     translateX(var(--radius));
-  animation: thumb-grow 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--i) * 25ms);
-  opacity: 0;
+  animation: thumb-grow 800ms cubic-bezier(0, 0, 0.15, 1) forwards;
 }
 
 .palette-ring-thumb img {
@@ -145,18 +141,8 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
-@keyframes orbit-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 @keyframes thumb-grow {
   from {
-    opacity: 0;
-    transform: rotate(var(--angle)) translateX(0px) scale(0.2);
-  }
-  to {
-    opacity: 1;
-    transform: rotate(var(--angle)) translateX(var(--radius)) scale(1);
+    transform: rotate(var(--angle)) translateX(0px) scale(0);
   }
 }

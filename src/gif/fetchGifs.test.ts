@@ -19,7 +19,7 @@ describe("fetchGifs", () => {
     const gifs = await fetchGifs();
     expect(gifs.length).toBeGreaterThanOrEqual(1);
     gifs.forEach((url) => {
-      expect(url).toMatch(/\/gifs\/.*\.gif$/);
+      expect(url).toMatch(/\/gifs\/tze\/.*\.gif$/);
     });
     expect(new Set(gifs).size).toBe(gifs.length);
   });

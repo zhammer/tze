@@ -129,7 +129,8 @@ body {
   margin-top: calc(var(--thumb-size) / -2);
   transform:
     rotate(var(--angle))
-    translateX(var(--radius));
+    translateX(var(--radius))
+    rotate(90deg);
   animation: thumb-grow 800ms cubic-bezier(0, 0, 0.15, 1) forwards;
 }
 
@@ -143,6 +144,6 @@ body {
 
 @keyframes thumb-grow {
   from {
-    transform: rotate(var(--angle)) translateX(0px) scale(0);
+    transform: rotate(var(--angle)) translateX(0px) rotate(90deg) scale(0);
   }
 }

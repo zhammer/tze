@@ -35,6 +35,9 @@ export const typewriterMachine = setup({
       | { type: "KEYSTROKE"; letter: string; timestamp: number }
       | { type: "BACKSPACE"; timestamp: number }
   },
+  actors: {
+    gifProvider: gifProviderMachine,
+  },
 }).createMachine({
   id: "typewriter",
   initial: "loading",
@@ -51,7 +54,7 @@ export const typewriterMachine = setup({
           target: "ready",
           actions: assign({
             gifProviderRef: ({ event, spawn }) =>
-              spawn(gifProviderMachine, {
+              spawn("gifProvider", {
                 input: { gifs: event.gifs },
                 id: "gifProvider",
               }),
@@ -64,7 +67,7 @@ export const typewriterMachine = setup({
         GIFS_LOADED: {
           actions: assign({
             gifProviderRef: ({ event, spawn }) =>
-              spawn(gifProviderMachine, {
+              spawn("gifProvider", {
                 input: { gifs: event.gifs },
                 id: "gifProvider",
               }),
@@ -105,7 +108,7 @@ export const typewriterMachine = setup({
         GIFS_LOADED: {
           actions: assign({
             gifProviderRef: ({ event, spawn }) =>
-              spawn(gifProviderMachine, {
+              spawn("gifProvider", {
                 input: { gifs: event.gifs },
                 id: "gifProvider",
               }),

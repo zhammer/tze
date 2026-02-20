@@ -28,7 +28,8 @@ describe("typewriterMachine", () => {
       letter: "H",
       t: 0,
     });
-    expect(snap.context.events[0].gifUrl).toBeTruthy();
+    const firstEvent = snap.context.events[0];
+    expect(firstEvent.type === "keystroke" && firstEvent.gifUrl).toBeTruthy();
   });
 
   it("records backspace events", () => {
@@ -67,6 +68,7 @@ describe("typewriterMachine", () => {
     actor.send({ type: "KEYSTROKE", letter: " ", timestamp: 1000 });
 
     const snap = actor.getSnapshot();
-    expect(snap.context.events[0].gifUrl).toBeUndefined();
+    const firstEvent = snap.context.events[0];
+    expect(firstEvent.type === "keystroke" && firstEvent.gifUrl).toBeFalsy();
   });
 });

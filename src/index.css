@@ -56,6 +56,13 @@ body {
   gap: 6rem;
 }
 
+@media (max-width: 600px) {
+  .app {
+    gap: 1.5rem;
+    padding-top: calc(var(--vvh, 100vh) / 2 - 150px);
+  }
+}
+
 .screen {
   width: 200px;
   height: 200px;

@@ -6,6 +6,7 @@ import { PaletteRing } from "./components/PaletteRing";
 import { paletteMachine } from "./machines/palette";
 import { fetchGifs } from "./gif/fetchGifs";
 import type { VisibleLetter } from "./machines/typewriter";
+import { inspect } from "./inspector";
 
 type WordGroup =
   | { type: "word"; letters: VisibleLetter[] }
@@ -40,7 +41,7 @@ function groupIntoWords(letters: VisibleLetter[]): WordGroup[] {
 
 function App() {
   const { snapshot: twSnapshot, send: twSend } = useTypewriter();
-  const [paletteSnapshot, paletteSend] = useMachine(paletteMachine);
+  const [paletteSnapshot, paletteSend] = useMachine(paletteMachine, { inspect });
 
   // Load the first palette on mount
   useEffect(() => {

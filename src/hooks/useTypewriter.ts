@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { useMachine } from "@xstate/react";
 import { typewriterMachine } from "../machines/typewriter";
 import { downloadRecording } from "../utils/save";
+import { inspect } from "../inspector";
 
 const VALID_KEY_REGEX = /^[a-zA-Z0-9 !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]$/;
 
 export function useTypewriter() {
-  const [snapshot, send] = useMachine(typewriterMachine);
+  const [snapshot, send] = useMachine(typewriterMachine, { inspect });
 
   // Listen for keystrokes
   useEffect(() => {

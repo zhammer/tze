@@ -11,7 +11,11 @@ export function getAvailablePalettes(): string[] {
     const match = path.match(/^\/public\/gifs\/([^/]+)\//);
     if (match) palettes.add(match[1]);
   }
-  return [...palettes];
+  // Ensure "tze" is first
+  const sorted = [...palettes].sort((a, b) =>
+    a === "tze" ? -1 : b === "tze" ? 1 : a.localeCompare(b)
+  );
+  return sorted;
 }
 
 // Local GIFs organized into palettes (subdirectories of public/gifs/)
